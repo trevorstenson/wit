@@ -1,0 +1,21 @@
+[package]
+name = "wit"
+version = "0.1.0"
+edition = "2021"
+description = "Version-controlled weather journal — git semantics for weather data"
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+git2 = "0.19"
+reqwest = { version = "0.12", features = ["blocking", "json"] }
+serde = { version = "1", features = ["derive"] }
+toml = "0.8"
+chrono = { version = "0.4", features = ["serde"] }
+colored = "2"
+comfy-table = "7"
+textplots = "0.8"
+rgb = "0.8"
+thiserror = "2"
+anyhow = "1"
+dirs = "5"
+slug = "0.1"
