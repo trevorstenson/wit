@@ -64,6 +64,22 @@ $ wit diff tokyo..boston 21d
 ╰─────────────┴──────────────────────────────────┴───────────────────────────────────────────────────┴────────╯
 ```
 
+### Charts
+
+Plot any metric over time for your tracked locations:
+
+```
+wit chart temp -l tokyo,boston -r 30d
+wit chart humidity -r 2w
+wit chart wind
+```
+
+Available metrics: `temp`, `feels`, `high`, `low`, `humidity`, `pressure`, `wind`, `gusts`, `uv`, `precip`, `cloud`.
+
+Each location gets its own color-coded series with min/avg/max in the legend:
+
+![wit chart wind -r 2w](assets/chart_sample.png)
+
 ## Quick queries
 
 The whole point is that you don't have to remember subcommands for common stuff:
@@ -91,16 +107,6 @@ Time specs: `7d`, `2w`, `3m`, `1y`, `yesterday`, month names (`jan`, `january`),
 | `wit diff <args>` | Compare snapshots (same syntax as quick queries) |
 | `wit backfill <location> --since <spec>` | Backfill historical data |
 | `wit chart [metric] -l <locations> -r <range>` | ASCII chart over time |
-
-### Charts
-
-```
-wit chart temp -l tokyo,boston -r 30d
-wit chart humidity -r 2w
-wit chart wind
-```
-
-Available metrics: `temp`, `feels`, `high`, `low`, `humidity`, `pressure`, `wind`, `gusts`, `uv`, `precip`, `cloud`.
 
 ## Configuration
 
