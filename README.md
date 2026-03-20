@@ -1,126 +1,174 @@
 # wit
 
-Git-style CLI for tracking, comparing, and charting weather over time.
+<p align="center"><strong>Git for weather.</strong></p>
 
-![wit chart wind -r 2w](assets/chart_sample.png)
+<p align="center">Track cities, commit snapshots, diff seasons, and chart weather history from your terminal.</p>
 
+<p align="center"><code>no API key</code> • <code>git-backed history</code> • <code>fast query syntax</code></p>
+
+<p align="center">
+  <img src="assets/chart_sample.png" alt="wit ASCII weather chart" width="860">
+</p>
+
+```bash
+wit tokyo
+wit tokyo 7d
+wit tokyo..boston
+wit tokyo jan..jul
+wit backfill tokyo --since 1y
 ```
-wit tokyo                 # current weather for any city
-wit tokyo 7d              # now vs 7 days ago
-wit tokyo..boston          # compare two cities
-wit tokyo jan..jul         # compare January vs July
+
+`wit` turns weather into something you can inspect like code: snapshot it, store it in git, diff it later, and chart how it changed.
+
+## Why It Grabs Attention
+
+- Every tracked weather snapshot is committed to a local git repo.
+- Historical backfill writes real backdated commits, so the timeline is queryable.
+- Quick queries work for both tracked locations and one-off city lookups.
+- The output is built for terminals: dashboards, side-by-side diffs, and ASCII charts.
+- It runs on Open-Meteo, so there is no API key or account setup.
+
+## Quick Start
+
+```bash
+wit init
+wit add tokyo
+wit add boston
+wit snap
+wit
+wit diff tokyo..boston
+wit chart temp -l tokyo,boston -r 30d
 ```
 
-Running `wit` with no arguments shows a status dashboard across everything you're tracking:
+What that gives you:
 
+- `wit` with no arguments shows a dashboard across tracked locations.
+- `wit snap` fetches current weather and commits the result.
+- `wit diff` compares locations or points in time in a table.
+- `wit chart` renders terminal charts from git history.
+
+## Query Syntax
+
+The shorthand query language is the main feature.
+
+```bash
+wit tokyo                  # current weather for any city
+wit tokyo 7d               # now vs 7 days ago
+wit tokyo..boston          # compare two cities now
+wit tokyo..boston 1w       # compare two cities a week ago
+wit tokyo jan..jul         # compare one city across seasons
+wit tokyo 2024             # compare now vs the same date in 2024
 ```
+
+Time specs supported:
+
+- `7d`, `2w`, `3m`, `1y`
+- `yesterday`, `last-week`, `last-month`
+- month names like `jan`, `january`
+- years like `2024`
+
+## What It Looks Like
+
+Running `wit` with no arguments shows a dashboard across everything you're tracking:
+
+```text
 ╭──────────────────────────────────────┬──────┬───────┬───────────┬────────────────────┬──────────┬──────────┬─────────────╮
 │ Location                             ┆ Temp ┆ Feels ┆ H / L     ┆ Conditions         ┆ Wind     ┆ Humidity ┆ Updated     │
 ╞══════════════════════════════════════╪══════╪═══════╪═══════════╪════════════════════╪══════════╪══════════╪═════════════╡
 │ New York, New York, United States    ┆ 35F  ┆ 35F   ┆ 39F / 31F ┆ 🌦 Moderate drizzle ┆ 5 mph SW ┆ 95%      ┆ 02/18 12:00 │
-├╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌┼╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌┤
 │ Tokyo, Tokyo, Japan                  ┆ 44F  ┆ 48F   ┆ 53F / 35F ┆ 🌦 Light drizzle    ┆ 14 mph N ┆ 49%      ┆ 02/18 12:00 │
-├╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌┼╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌┤
 │ Boston, Massachusetts, United States ┆ 52F  ┆ 42F   ┆ 56F / 31F ┆ 🌥 Overcast         ┆ 17 mph S ┆ 46%      ┆ 03/20 16:43 │
 ╰──────────────────────────────────────┴──────┴───────┴───────────┴────────────────────┴──────────┴──────────┴─────────────╯
 ```
 
-Compare locations side by side at any point in time:
+Compare locations side by side:
 
-```
+```text
 $ wit diff tokyo..boston 21d
 
 ╭─────────────┬──────────────────────────────────┬───────────────────────────────────────────────────┬────────╮
 │             ┆ Tokyo, Tokyo, Japan (2026-02-27) ┆ Boston, Massachusetts, United States (2026-02-27) ┆ Delta  │
 ╞═════════════╪══════════════════════════════════╪═══════════════════════════════════════════════════╪════════╡
 │ Temperature ┆ 48F                              ┆ 31F                                               ┆ -17F   │
-├╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌┤
 │ Feels like  ┆ 44F                              ┆ 25F                                               ┆ -19F   │
-├╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌┤
 │ Wind        ┆ 2 mph E                          ┆ 4 mph SE                                          ┆ +2mph  │
-├╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌┤
 │ Humidity    ┆ 47%                              ┆ 81%                                               ┆ +34%   │
 ╰─────────────┴──────────────────────────────────┴───────────────────────────────────────────────────┴────────╯
 ```
 
 ## Install
 
-```
+```bash
 cargo install --path .
 ```
 
-## Getting started
+## Getting Started
 
-```
-wit init                  # create the weather repo
-wit add tokyo             # track a city (geocodes automatically)
+```bash
+wit init
+wit add tokyo
 wit add boston
-wit snap                  # fetch current weather for all locations, commit
+wit snap
 ```
 
-Add the places you care about, run `wit snap` whenever you want (or on a cron), and you'll accumulate a history you can diff and chart later.
-
-## Charts
-
-```
-wit chart temp -l tokyo,boston -r 30d
-wit chart humidity -r 2w
-wit chart wind
-```
-
-Available metrics: `temp`, `feels`, `high`, `low`, `humidity`, `pressure`, `wind`, `gusts`, `uv`, `precip`, `cloud`.
-
-## Quick queries
-
-Time specs: `7d`, `2w`, `3m`, `1y`, `yesterday`, month names (`jan`, `january`), years (`2024`).
-
-```
-wit tokyo..boston 1w       # compare two cities a week ago
-wit tokyo jan..jul         # compare January vs July
-```
+After that, run `wit snap` whenever you want a new checkpoint, or automate it with cron/launchd/systemd. The value of the tool compounds as the git history grows.
 
 ## Commands
 
 | Command | What it does |
 |---------|-------------|
-| `wit init [path]` | Initialize repo (defaults to `~/.wit`) |
+| `wit init [path]` | Initialize the weather repo, defaulting to `~/.wit` |
 | `wit add <city>` | Geocode and start tracking a location |
-| `wit snap` | Fetch + commit weather for all tracked locations |
-| `wit status [location]` | Dashboard of current conditions |
-| `wit log [location] [-n N]` | Commit history |
-| `wit locations` | List tracked locations with coords |
-| `wit diff <args>` | Compare snapshots (same syntax as quick queries) |
-| `wit backfill <location> --since <spec>` | Backfill historical data |
-| `wit chart [metric] -l <locations> -r <range>` | ASCII chart over time |
+| `wit snap` | Fetch and commit weather for all tracked locations |
+| `wit status [location]` | Show the current dashboard |
+| `wit log [location] [-n N]` | Show snapshot history from git |
+| `wit locations` | List tracked locations with coordinates and timezone |
+| `wit diff <args>` | Compare snapshots using the query syntax |
+| `wit backfill <location> --since <spec>` | Import historical data into git history |
+| `wit chart [metric] -l <locations> -r <range>` | Render an ASCII chart over time |
 
-## Configuration
+## Metrics
 
-Settings live in `~/.wit/wit.toml`. Right now the main thing you can change is units:
+`wit chart` supports:
 
-```toml
-[settings]
-units = "imperial"   # or "metric"
-```
+`temp`, `feels`, `high`, `low`, `humidity`, `pressure`, `wind`, `gusts`, `uv`, `precip`, `cloud`
 
-Locations are added via `wit add` and tracked in the same file.
+## How It Works
 
-## How it works
+The repo layout under `~/.wit` looks like this:
 
-The repo layout under `~/.wit` looks like:
-
-```
+```text
 .git/
 wit.toml
 locations/
   tokyo/
-    meta.toml        # name, coordinates, timezone
-    current.toml     # latest snapshot
+    meta.toml
+    current.toml
   boston/
     meta.toml
     current.toml
 ```
 
-Each snapshot captures temperature (current, feels like, high, low), wind (speed, direction, gusts), atmosphere (humidity, pressure, cloud cover, UV), and precipitation (amount, probability, snowfall). All data comes from [Open-Meteo](https://open-meteo.com/), no API key needed.
+Tracked locations live in `wit.toml`. Each location has metadata plus its latest snapshot on disk. Git stores the history, and `wit` reads older snapshots back out of commits when you run time-based queries or charts.
+
+## Configuration
+
+Settings live in `~/.wit/wit.toml`.
+
+```toml
+[settings]
+units = "imperial" # or "metric"
+```
+
+## Data Source
+
+Weather data comes from [Open-Meteo](https://open-meteo.com/). Current snapshots include richer live fields like cloud cover and precipitation probability. Historical backfill uses daily archive data, so some fields are necessarily coarser.
+
+## Caveats
+
+- `wit` is strongest once you have a bit of history; the first day is less interesting than day 30.
+- Historical queries for tracked locations use git history when available and the archive API when needed.
+- This repo currently builds cleanly with `cargo check`, but there are no automated tests yet.
 
 ## License
 
