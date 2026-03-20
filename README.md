@@ -4,7 +4,6 @@
 
 <p align="center">Track cities, commit snapshots, diff seasons, and chart weather history from your terminal.</p>
 
-<p align="center"><code>no API key</code> • <code>git-backed history</code> • <code>fast query syntax</code></p>
 
 <p align="center">
   <img src="assets/chart_sample.png" alt="wit ASCII weather chart" width="860">
