@@ -2,25 +2,14 @@
 
 Git-style CLI for tracking, comparing, and charting weather over time.
 
-Track cities, check conditions at a glance, and diff weather across locations or points in time, all from the terminal. Under the hood, snapshots are stored as TOML files in a git repo (`~/.wit`), so you also get a full commit history you can look back on.
-
-## Install
+![wit chart wind -r 2w](assets/chart_sample.png)
 
 ```
-cargo build --release
-cp target/release/wit ~/.local/bin/ # or wherever you keep binaries
+wit tokyo                 # current weather for any city
+wit tokyo 7d              # now vs 7 days ago
+wit tokyo..boston          # compare two cities
+wit tokyo jan..jul         # compare January vs July
 ```
-
-## Getting started
-
-```
-wit init                  # create the weather repo
-wit add tokyo             # track a city (geocodes automatically)
-wit add boston
-wit snap                  # fetch current weather for all locations, commit
-```
-
-The idea behind tracking cities is that `wit` builds up a local git history of snapshots over time. Add the places you care about, run `wit snap` whenever you want (or on a cron), and you'll accumulate a history you can diff and chart later.
 
 Running `wit` with no arguments shows a status dashboard across everything you're tracking:
 
@@ -36,37 +25,42 @@ Running `wit` with no arguments shows a status dashboard across everything you'r
 ╰──────────────────────────────────────┴──────┴───────┴───────────┴────────────────────┴──────────┴──────────┴─────────────╯
 ```
 
-You can also compare locations side by side at any point in time. Here's Tokyo vs Boston three weeks ago:
+Compare locations side by side at any point in time:
 
 ```
 $ wit diff tokyo..boston 21d
 
-  diff Tokyo, Tokyo, Japan (2026-02-27) vs Boston, Massachusetts, United States (2026-02-27)
-
 ╭─────────────┬──────────────────────────────────┬───────────────────────────────────────────────────┬────────╮
 │             ┆ Tokyo, Tokyo, Japan (2026-02-27) ┆ Boston, Massachusetts, United States (2026-02-27) ┆ Delta  │
 ╞═════════════╪══════════════════════════════════╪═══════════════════════════════════════════════════╪════════╡
-│ Conditions  ┆ Mainly clear                     ┆ Clear sky                                         ┆        │
-├╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌┤
 │ Temperature ┆ 48F                              ┆ 31F                                               ┆ -17F   │
 ├╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌┤
 │ Feels like  ┆ 44F                              ┆ 25F                                               ┆ -19F   │
 ├╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌┤
-│ High        ┆ 50F                              ┆ 40F                                               ┆ -11F   │
-├╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌┤
-│ Low         ┆ 36F                              ┆ 30F                                               ┆ -6F    │
-├╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌┤
 │ Wind        ┆ 2 mph E                          ┆ 4 mph SE                                          ┆ +2mph  │
 ├╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌┤
 │ Humidity    ┆ 47%                              ┆ 81%                                               ┆ +34%   │
-├╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌┤
-│ Pressure    ┆ 1014 hPa                         ┆ 1016 hPa                                          ┆ +2 hPa │
 ╰─────────────┴──────────────────────────────────┴───────────────────────────────────────────────────┴────────╯
 ```
 
-### Charts
+## Install
 
-Plot any metric over time for your tracked locations:
+```
+cargo install --path .
+```
+
+## Getting started
+
+```
+wit init                  # create the weather repo
+wit add tokyo             # track a city (geocodes automatically)
+wit add boston
+wit snap                  # fetch current weather for all locations, commit
+```
+
+Add the places you care about, run `wit snap` whenever you want (or on a cron), and you'll accumulate a history you can diff and chart later.
+
+## Charts
 
 ```
 wit chart temp -l tokyo,boston -r 30d
@@ -76,23 +70,14 @@ wit chart wind
 
 Available metrics: `temp`, `feels`, `high`, `low`, `humidity`, `pressure`, `wind`, `gusts`, `uv`, `precip`, `cloud`.
 
-Each location gets its own color-coded series with min/avg/max in the legend:
-
-![wit chart wind -r 2w](assets/chart_sample.png)
-
 ## Quick queries
 
-The whole point is that you don't have to remember subcommands for common stuff:
-
-```
-wit tokyo                 # current weather
-wit tokyo 7d              # now vs 7 days ago
-wit tokyo..boston          # compare two cities
-wit tokyo jan..jul         # compare January vs July
-wit tokyo..boston 1w       # compare two cities a week ago
-```
-
 Time specs: `7d`, `2w`, `3m`, `1y`, `yesterday`, month names (`jan`, `january`), years (`2024`).
+
+```
+wit tokyo..boston 1w       # compare two cities a week ago
+wit tokyo jan..jul         # compare January vs July
+```
 
 ## Commands
 
